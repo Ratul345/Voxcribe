@@ -1,205 +1,383 @@
-# 🎤 BanglaSTT - Bangla Speech-to-Text Transcription Tool
+# 🎤 Voxcribe — Local Video/Audio Transcription Tool
 
-![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
+![Python](https://img.shields.io/badge/python-3.9+-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
-![Whisper](https://img.shields.io/badge/powered%20by-OpenAI%20Whisper-orange.svg)
+![Engine](https://img.shields.io/badge/engine-faster--whisper-orange.svg)
+![Privacy](https://img.shields.io/badge/privacy-local%20only-brightgreen.svg)
 
-A professional-grade Bangla speech recognition tool powered by OpenAI Whisper. Convert your Bangla audio files to text with high accuracy and cross-platform compatibility.
+A privacy-first, local transcription tool for studying educational videos and audio content.
+
+Voxcribe converts your local video/audio files into high-quality transcripts — with timestamps, subtitle files, and structured JSON — all processed **entirely on your machine**.
+
+## 🌟 What's New in v2
+
+Voxcribe started as a Bengali-only speech-to-text tool. Version 2 evolves it into a **multilingual transcription tool** while keeping its Bengali heritage and simple design.
+
+| v1 | v2 |
+|---|---|
+| OpenAI Whisper | **faster-whisper** (CTranslate2, faster & more efficient) |
+| Bengali only (`language="bn"`) | **Multilingual** with auto-detection |
+| Plain text output | **TXT + Timestamped TXT + SRT + JSON** |
+| No timestamps | **Per-segment timestamps** |
+| `base` model | **`small` model** (better quality default) |
+| CPU only, no choice | **CPU (int8) + optional CUDA (float16)** |
+| No VAD | **Voice Activity Detection** enabled by default |
+
+## 👥 Team
+
+- **Sajjad Hossain Ratul** — Founder & CEO
+- **Rivo** (ChatGPT) — AI Technical Co-Founder / Product & Architecture Assistant
 
 ## ✨ Features
 
-- 🎯 **Bangla Language Support**: Optimized for Bangla speech recognition
-- 🖥️ **Cross-Platform**: Works on Windows, macOS, and Linux
-- ⚡ **Fast Processing**: Multiple model sizes for different performance needs
-- 🎵 **Multiple Formats**: Supports MP3, WAV, M4A, MP4, WebM, and more
-- 💾 **Output Options**: Save transcriptions to text files
-- 🛡️ **Error Handling**: Comprehensive error handling and validation
-- 🎨 **Beautiful CLI**: User-friendly command-line interface with emojis
+- 🎯 **Multilingual**: Bengali, English, Hindi, and 90+ languages supported by Whisper
+- 🔒 **Privacy-first**: All processing happens locally — no uploads, no cloud, no tracking
+- ⚡ **Fast**: Uses faster-whisper (CTranslate2) for efficient CPU/GPU inference
+- ⏱️ **Timestamps**: Every segment has start/end times
+- 📄 **Multiple outputs**: TXT, Timestamped TXT, SRT subtitles, JSON
+- 🎤 **VAD**: Voice Activity Detection reduces hallucination during silence
+- 🌐 **Auto-detect**: Automatic language detection with confidence score
+- 🗣️ **Mixed language**: Handles Bangla+English, Banglish, technical terms naturally
+- 📺 **Video support**: MP4, MKV, AVI, MOV, WebM — audio extracted automatically
+- 🎵 **Audio support**: MP3, WAV, M4A, MPEG, MPGA
+- 💻 **CPU-friendly**: Works without a GPU using int8 quantization
+- 🎮 **Optional GPU**: CUDA support for faster processing
+- 📴 **Offline**: After model download, works without internet
 
 ## 🚀 Quick Start
 
+### Prerequisites
+
+- **Python 3.9+**
+- **FFmpeg** (see [FFmpeg Setup](#-ffmpeg-setup) below)
+
 ### Installation
 
-1. **Clone or download this repository**
-2. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+```bash
+# Clone the repository
+git clone https://github.com/Ratul345/Voxcribe.git
+cd Voxcribe
 
-3. **Start transcribing**:
-   ```bash
-   python transcribe.py your_audio_file.mp3
-   ```
+# Create virtual environment (recommended)
+python -m venv .venv
+.venv\Scripts\activate     # Windows (.venv\Scripts\Activate.ps1 in PowerShell)
+# source .venv/bin/activate  # macOS/Linux
+
+# Install project in editable mode (creates the `voxcribe` command)
+pip install -e .
+```
+
+> **Note**: The first time you use a model, it will be downloaded automatically (~460 MB for `small`). After that, transcription works offline. Models are cached in `~/.cache/huggingface/hub/`.
 
 ### Basic Usage
 
 ```bash
-# Transcribe an audio file
-python transcribe.py audio_file.mp3
+# Transcribe with auto language detection (default)
+voxcribe video.mp4
 
-# Use a specific model size
-python transcribe.py audio_file.mp3 --model small
+# Specify language
+voxcribe lecture.mp3 --language bn
+voxcribe podcast.wav --language en
 
-# Save transcription to file
-python transcribe.py audio_file.mp3 --output
+# Choose model quality
+voxcribe audio.m4a --model medium
 
-# Get help
-python transcribe.py --help
+# Multiple output formats (timestamped TXT, clean plain TXT, SRT, JSON)
+voxcribe video.mp4 --format txt,plain,srt,json
+
+# Custom output path
+voxcribe video.mp4 --output my_transcript
+
+# Backward-compatible / development alias (works identically)
+python transcribe.py video.mp4
 ```
 
-## 📋 Available Models
+## 📋 Models
 
-| Model | Size | Speed | Accuracy | Best For |
-|-------|------|-------|----------|----------|
-| `tiny` | 39 MB | ⚡ Fastest | 🟡 Good | Quick tests, short audio |
-| `base` | 74 MB | ⚡ Fast | 🟢 Better | General use, default choice |
-| `small` | 244 MB | 🟡 Medium | 🟢 Good | Better accuracy, longer audio |
-| `medium` | 769 MB | 🟡 Slow | 🔵 Very Good | Professional use |
-| `large` | 1550 MB | 🔴 Slowest | 🔵 Best | Maximum accuracy |
+| Model | Size | Speed | Quality | Best For |
+|-------|------|-------|---------|----------|
+| `tiny` | ~75 MB | ⚡ Fastest | 🟡 Basic | Quick tests, short clips |
+| `base` | ~145 MB | ⚡ Fast | 🟢 Good | Lightweight, faster processing |
+| **`small`** | **~460 MB** | **🟡 Balanced** | **🟢 Recommended** | **Default — best quality/speed balance** |
+| `medium` | ~1.5 GB | 🔴 Slow | 🔵 High | Important content, better accuracy |
+| `large-v3` | ~3 GB | 🔴 Slowest | 🔵 Highest | Maximum quality, needs more RAM |
 
-**💡 Recommendation**: Start with `base` model for most use cases.
+**💡 Recommendation**: Start with `small`. It provides noticeably better accuracy than `base`, especially for Bengali and mixed-language content, while remaining practical on a normal Windows PC with CPU.
 
-## 🔧 Command-Line Options
+> **⚠️ RAM usage**: `medium` needs ~5 GB RAM, `large-v3` needs ~10 GB+. If your PC has 8 GB RAM, stick with `small` or `base`.
+
+## 🌐 Language Support
+
+Voxcribe supports all languages available in the Whisper model, including:
+
+| Code | Language |
+|------|----------|
+| `auto` | Automatic detection (default) |
+| `bn` | Bengali / বাংলা |
+| `en` | English |
+| `hi` | Hindi / हिन्दी |
+| `es` | Spanish |
+| `fr` | French |
+| `de` | German |
+| `ja` | Japanese |
+| `zh` | Chinese |
+| `ar` | Arabic |
+| ... | [90+ languages](https://github.com/openai/whisper#available-models-and-languages) |
+
+### Mixed Language
+
+Voxcribe does **not** translate speech. It transcribes what was actually spoken.
+
+If someone says:
+
+> "আজ আমরা React-এর component architecture নিয়ে কথা বলব"
+
+The transcript will be:
+
+> আজ আমরা React-এর component architecture নিয়ে কথা বলব
+
+English technical terms inside Bengali speech are preserved naturally.
+
+## 📄 Output Formats
+
+### TXT — Timestamped text (default)
 
 ```
-usage: transcribe.py [-h] [-m {tiny,base,small,medium,large}] [-o] [-v] audio_file
-
-BanglaSTT - Bangla Speech-to-Text using OpenAI Whisper
-
-positional arguments:
-  audio_file            Path to the audio file (MP3, WAV, M4A, etc.)
-
-options:
-  -h, --help            show this help message and exit
-  -m {tiny,base,small,medium,large}, --model {tiny,base,small,medium,large}
-                        Whisper model size (default: base)
-  -o, --output          Save transcription to output.txt
-  -v, --verbose         Enable verbose output
+[00:00:03] Hello everyone.
+[00:00:08] Today we're going to talk about the first concept.
+[00:00:15] The first important concept is...
 ```
 
-## 📁 Supported Audio Formats
+Best for: studying and referencing specific parts of a video.
 
-- **MP3** - Most common audio format
-- **WAV** - Uncompressed audio format
-- **M4A** - Apple audio format
-- **MP4** - Video files (audio extraction)
-- **WebM** - Web-optimized format
-- **MPEG** - Standard audio format
-- **MPGA** - MPEG audio format
+### Plain TXT (`--format plain`)
 
-## 🛠️ Technical Details
+```
+Hello everyone.
 
-### Cross-Platform Compatibility
+Today we're going to talk about the first concept.
 
-- **Windows**: Automatic FFmpeg setup using `imageio-ffmpeg`
-- **macOS/Linux**: Uses system FFmpeg (install separately if needed)
+The first important concept is...
+```
 
-### Dependencies
+Best for: reading, studying, and pasting into AI chat for discussion without timestamps.
 
-- **openai-whisper**: Core speech recognition engine
-- **imageio-ffmpeg**: Windows FFmpeg support
-- **torch**: PyTorch for model inference
-- **numpy**: Numerical computations
+### SRT — Standard subtitle format (`--format srt`)
 
-### Performance Tips
+```
+1
+00:00:03,000 --> 00:00:08,000
+Hello everyone.
 
-1. **Use smaller models** for faster processing
-2. **Shorter audio files** process faster
-3. **Good audio quality** improves accuracy
-4. **Clear speech** reduces errors
+2
+00:00:08,000 --> 00:00:15,000
+Today we're going to talk about the first concept.
+```
+
+Best for: loading as subtitles in video players (VLC, YouTube, etc.).
+
+### JSON — Structured data (`--format json`)
+
+```json
+{
+  "source": "video.mp4",
+  "language": "en",
+  "language_probability": 0.98,
+  "duration": 123.45,
+  "segments": [
+    {"start": 3.0, "end": 8.0, "text": "Hello everyone."}
+  ]
+}
+```
+
+Best for: programmatic analysis, developer integrations, and AI pipelines.
+
+## 🔧 CLI Reference
+
+```
+usage: voxcribe [-h] [-m MODEL] [-l LANGUAGE] [-o OUTPUT] [-f FORMAT]
+                [--device {cpu,cuda}] [--compute-type TYPE]
+                [--vad | --no-vad] [--task {transcribe,translate}]
+                [-v] [--version]
+                input_file
+```
+
+| Argument | Short | Default | Description |
+|----------|-------|---------|-------------|
+| `input_file` | | (required) | Path to audio/video file |
+| `--model` | `-m` | `small` | Model: tiny, base, small, medium, large-v3, turbo |
+| `--language` | `-l` | `auto` | Language code or "auto" |
+| `--output` | `-o` | `output/<name>` | Output path/base name |
+| `--format` | `-f` | `txt` | Output formats (comma-separated): txt, plain, srt, json |
+| `--device` | | `cpu` | Compute device: cpu, cuda |
+| `--compute-type` | | `int8` | Precision: int8 (CPU default), float16 (GPU), float32 |
+| `--vad` | | (on) | Enable VAD (default) |
+| `--no-vad` | | | Disable VAD |
+| `--task` | | `transcribe` | Task: transcribe (default) or translate (to English) |
+| `--verbose` | `-v` | | Show debug output |
+| `--version` | | | Show version |
+
+## 💻 CPU Usage
+
+Voxcribe works on CPU by default — no GPU required.
+
+```bash
+# Default: CPU with int8 quantization
+voxcribe video.mp4
+
+# Explicitly:
+voxcribe video.mp4 --device cpu --compute-type int8
+```
+
+This is the recommended setup for most Windows PCs.
+
+## 🎮 GPU / CUDA Usage (Optional)
+
+If you have an NVIDIA GPU with CUDA configured:
+
+```bash
+voxcribe video.mp4 --device cuda --compute-type float16
+```
+
+**Requirements for GPU:**
+- NVIDIA GPU with CUDA support
+- CUDA toolkit installed
+- cuDNN installed
+- `pip install nvidia-cublas-cu12 nvidia-cudnn-cu12` (or equivalent for your CUDA version)
+
+> **Note**: If you request `--device cuda` and CUDA is not available, Voxcribe will show a clear error instead of silently falling back to CPU.
+
+## 🔊 FFmpeg Setup
+
+Voxcribe needs FFmpeg to decode audio/video files.
+
+### Windows
+
+**Option A — Automatic** (recommended for beginners):
+```bash
+pip install imageio-ffmpeg
+```
+This installs a bundled FFmpeg binary. Voxcribe finds it automatically.
+
+**Option B — Manual**:
+1. Download FFmpeg from https://ffmpeg.org/download.html
+2. Extract to a folder (e.g. `C:\ffmpeg`)
+3. Add `C:\ffmpeg\bin` to your system PATH
+
+### macOS
+```bash
+brew install ffmpeg
+```
+
+### Linux
+```bash
+sudo apt install ffmpeg
+```
+
+## 📁 Project Structure
+
+```
+Voxcribe/
+├── pyproject.toml         # Build & console script definition (voxcribe = voxcribe.cli:main)
+├── transcribe.py          # Backward-compatible CLI entry point
+├── voxcribe/
+│   ├── __init__.py        # Package metadata
+│   ├── cli.py             # Argument parsing & orchestration
+│   ├── transcriber.py     # faster-whisper model & transcription
+│   ├── exporters.py       # TXT, Plain, SRT, JSON output writers
+│   └── utils.py           # FFmpeg, validation, formatting
+├── requirements.txt       # Dependencies
+├── README.md              # Documentation
+├── CONTRIBUTING.md        # Contribution guide
+├── LICENSE                # MIT License
+└── .gitignore
+```
 
 ## 🎯 Examples
 
-### Example 1: Basic Transcription
+### Transcribe a Bengali lecture
 ```bash
-python transcribe.py interview.mp3
+voxcribe bangla_lecture.mp4 --language bn --format txt,srt
 ```
 
-### Example 2: High Accuracy Mode
+### Transcribe an English podcast with all outputs
 ```bash
-python transcribe.py lecture.wav --model medium --output
+voxcribe podcast.mp3 --language en --format txt,plain,srt,json
 ```
 
-### Example 3: Quick Processing
+### Auto-detect language from a Reel or educational clip
 ```bash
-python transcribe.py meeting.m4a --model tiny
+voxcribe reel_video.mp4 --format txt
+```
+
+### High-quality transcription
+```bash
+voxcribe important_lecture.mp4 --model medium --format txt,srt,json
+```
+
+### Quick transcription of a short clip
+```bash
+voxcribe clip.mp3 --model tiny
 ```
 
 ## 🔍 Troubleshooting
 
-### Common Issues
+### "FFmpeg not found"
+- Install imageio-ffmpeg: `pip install imageio-ffmpeg`
+- Or install FFmpeg system-wide and add it to PATH
 
-**"FFmpeg not found" error on Windows:**
-- ✅ Automatically handled by the tool
-- Uses `imageio-ffmpeg` package
+### "CUDA is not available"
+- You requested `--device cuda` but CUDA is not configured
+- Run with `--device cpu` (default) or install CUDA toolkit
 
-**"Model loading failed" error:**
-- Check internet connection for model download
-- Ensure sufficient disk space
-- Try smaller model size
+### "Not enough memory"
+- Use a smaller model: `--model base` or `--model tiny`
+- Close other applications to free RAM
+- `large-v3` requires 10+ GB RAM
 
-**"Audio file not found" error:**
-- Check file path is correct
-- Ensure file exists
-- Use absolute path if needed
+### "Failed to download model"
+- Check your internet connection
+- The model downloads only once and is cached locally
+- Cache location: `~/.cache/huggingface/hub/`
 
-**Poor transcription quality:**
-- Use larger model size
-- Check audio quality
-- Ensure clear speech in audio
+### Poor transcription quality
+- Use a larger model: `--model medium` or `--model large-v3`
+- Specify the language explicitly: `--language bn`
+- Ensure the audio is clear with minimal background noise
+- Try `--no-vad` if VAD is cutting off speech
 
-### FFmpeg Installation (if needed)
+### Slow transcription
+- Use a smaller model: `--model base` or `--model tiny`
+- If you have a CUDA GPU: `--device cuda --compute-type float16`
 
-**Windows**: Handled automatically
-**macOS**: `brew install ffmpeg`
-**Linux**: `sudo apt install ffmpeg`
+## 🔒 Privacy
 
-## 📊 Performance Benchmarks
+Voxcribe is designed for privacy:
 
-Based on testing with typical Bangla audio files:
+- ✅ **All processing is local** — audio/video never leaves your machine
+- ✅ **No analytics or telemetry** — zero tracking
+- ✅ **No cloud APIs** — no OpenAI API key needed
+- ✅ **No automatic uploads** — your content stays yours
+- ✅ **Offline capable** — after model download, no internet needed
 
-| Model | File Size | Processing Time | Accuracy |
-|-------|-----------|----------------|----------|
-| tiny  | 1 minute  | 5-10 seconds   | 85% |
-| base  | 1 minute  | 10-15 seconds  | 90% |
-| small | 1 minute  | 30-45 seconds  | 93% |
-| medium| 1 minute  | 60-90 seconds  | 96% |
-| large | 1 minute  | 2-3 minutes    | 98% |
-
-## 🤝 Contributing
-
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+The only network activity is the one-time model download from Hugging Face when you first use a model.
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License — see [LICENSE](LICENSE) for details.
 
 ## 🙏 Acknowledgments
 
-- **OpenAI Whisper** - For the amazing speech recognition engine
-- **Bangla Community** - For testing and feedback
-- **Open Source Contributors** - For making this possible
+- **[faster-whisper](https://github.com/SYSTRAN/faster-whisper)** — CTranslate2-based Whisper reimplementation by SYSTRAN
+- **[OpenAI Whisper](https://github.com/openai/whisper)** — Original Whisper speech recognition research by OpenAI
+- **[CTranslate2](https://github.com/OpenNMT/CTranslate2)** — Fast inference engine
 
 ## 📞 Support
 
-- 🐛 **Bug Reports**: Create an issue on [GitHub](https://github.com/Ratul345/BanglaSTT)
+- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/Ratul345/Voxcribe/issues)
 - 💡 **Feature Requests**: Open a discussion
-- ❓ **Questions**: Check the FAQ below
-
-## ❓ Frequently Asked Questions
-
-**Q: Can I use this for other languages?**
-A: While optimized for Bangla, Whisper supports many languages. Modify the language parameter in the code.
-
-**Q: What's the maximum file size?**
-A: No hard limit, but larger files take more time and memory.
-
-**Q: Can I use this commercially?**
-A: Check OpenAI Whisper's license terms for commercial use.
-
-**Q: Do I need internet connection?**
-A: Only for initial model download, transcription works offline.
+- ❓ **Questions**: Check the troubleshooting section above
 
 ---
 
-**⭐ If this tool helps you, please give it a star!**
+**⭐ If Voxcribe helps your learning, give it a star!**

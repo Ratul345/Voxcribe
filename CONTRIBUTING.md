@@ -1,10 +1,10 @@
-# 🤝 Contributing to BanglaSTT
+# 🤝 Contributing to Voxcribe
 
-Thank you for your interest in contributing to BanglaSTT! This guide will help you get started with contributing to our Bangla speech-to-text transcription tool.
+Thank you for your interest in contributing to Voxcribe! This guide will help you get started with contributing to our Bangla speech-to-text transcription tool.
 
 ## 🌟 Why Contribute?
 
-By contributing to BanglaSTT, you're helping make speech recognition technology more accessible to the 230+ million Bangla speakers worldwide. Every contribution, no matter how small, makes a difference!
+By contributing to Voxcribe, you're helping make speech recognition technology more accessible to the 230+ million Bangla speakers worldwide. Every contribution, no matter how small, makes a difference!
 
 ## 🚀 Quick Start Guide
 
@@ -12,8 +12,8 @@ By contributing to BanglaSTT, you're helping make speech recognition technology 
 
 ```bash
 # Fork the repository on GitHub, then clone your fork
-git clone https://github.com/Ratul345/BanglaSTT.git
-cd banglastt
+git clone https://github.com/Ratul345/Voxcribe.git
+cd Voxcribe
 ```
 
 ### 2. Set Up Development Environment
@@ -44,7 +44,7 @@ pip install pytest black flake8
 Found a bug? Help us fix it!
 
 **How to report:**
-1. Check if the bug already exists in [Issues](https://github.com/Ratul345/BanglaSTT/issues)
+1. Check if the bug already exists in [Issues](https://github.com/Ratul345/Voxcribe/issues)
 2. Create a new issue with the bug report template
 3. Include:
    - Steps to reproduce
@@ -209,7 +209,7 @@ changes
 ## 🎯 Project Structure
 
 ```
-banglastt/
+Voxcribe/
 ├── transcribe.py          # Main transcription script
 ├── requirements.txt       # Dependencies
 ├── README.md             # User documentation
@@ -307,7 +307,7 @@ New to open source? Start here!
 
 ---
 
-**Thank you for contributing to BanglaSTT!** 🙏
+**Thank you for contributing to Voxcribe!** 🙏
 
 Every contribution, no matter how small, helps make speech recognition more accessible to the Bangla-speaking community. You're not just contributing to a project - you're helping democratize AI technology for millions of people! 🌟
 

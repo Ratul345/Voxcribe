@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "voxcribe"
+version = "2.0.0"
+description = "Local AI Video/Audio Transcription Tool powered by faster-whisper"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+    { name = "Ratul" }
+]
+keywords = [
+    "transcription",
+    "speech-to-text",
+    "whisper",
+    "faster-whisper",
+    "bangla",
+    "subtitles",
+    "srt",
+    "ai"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Multimedia :: Sound/Audio :: Speech",
+]
+dependencies = [
+    "faster-whisper>=1.0.0",
+    "imageio-ffmpeg>=0.6.0; sys_platform == 'win32'",
+]
+
+[project.scripts]
+voxcribe = "voxcribe.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["voxcribe*"]

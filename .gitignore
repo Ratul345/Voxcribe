@@ -1,5 +1,4 @@
-# ChaosPy - Git Ignore File
-# Keep the chaos organized, not the clutter!
+# Voxcribe - Git Ignore File
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -56,26 +55,6 @@ cover/
 *.mo
 *.pot
 
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-.pybuilder/
-target/
-
 # Jupyter Notebook
 .ipynb_checkpoints
 
@@ -98,13 +77,6 @@ poetry.lock
 # PEP 582
 __pypackages__/
 
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
-
-# SageMath parsed files
-*.sage.py
-
 # Environments
 .env
 .venv
@@ -121,9 +93,6 @@ venv.bak/
 
 # Rope project settings
 .ropeproject
-
-# mkdocs documentation
-/site
 
 # mypy
 .mypy_cache/
@@ -153,5 +122,16 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 
-# ChaosPy specific - keep the chaos, ignore the rest
-# (Add project-specific ignores here if needed)
+# Voxcribe output directory
+output/
+
+# Whisper model cache (large files)
+*.bin
+*.ct2
+
+# Temporary media files
+*.tmp
+
+#audios
+bangla.mp4
+hindi.mp4
