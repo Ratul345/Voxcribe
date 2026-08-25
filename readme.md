@@ -23,10 +23,6 @@ Voxcribe started as a Bengali-only speech-to-text tool. Version 2 evolves it int
 | CPU only, no choice | **CPU (int8) + optional CUDA (float16)** |
 | No VAD | **Voice Activity Detection** enabled by default |
 
-## 👥 Team
-
-- **Sajjad Hossain Ratul** — Founder & CEO
-- **Rivo** (ChatGPT) — AI Technical Co-Founder / Product & Architecture Assistant
 
 ## ✨ Features
 
