@@ -1,6 +1,9 @@
 import os
+# pyrefly: ignore [missing-import]
 import spaces
+# pyrefly: ignore [missing-import]
 import gradio as gr
+# pyrefly: ignore [missing-import]
 from faster_whisper import WhisperModel
 
 # Global model cache to avoid re-allocating when reusing container
@@ -56,7 +59,7 @@ def transcribe_audio(audio_path, model_size, language, task):
     return meta_info, transcription, srt_content
 
 # Custom UI
-with gr.Blocks(title="Voxcribe - Speech to Text", theme=gr.themes.Soft()) as demo:
+with gr.Blocks(title="Voxcribe - Speech to Text") as demo:
     gr.Markdown(
         """
         # 🎙️ Voxcribe — Bangla & Multilingual Speech to Text
@@ -100,8 +103,8 @@ with gr.Blocks(title="Voxcribe - Speech to Text", theme=gr.themes.Soft()) as dem
 
         with gr.Column(scale=1):
             meta_display = gr.Markdown(label="Info")
-            text_output = gr.Textbox(label="Transcription Text", lines=8, show_copy_button=True)
-            srt_output = gr.Textbox(label="Subtitles (SRT format)", lines=8, show_copy_button=True)
+            text_output = gr.Textbox(label="Transcription Text", lines=8)
+            srt_output = gr.Textbox(label="Subtitles (SRT format)", lines=8)
 
     transcribe_btn.click(
         fn=transcribe_audio,
@@ -110,4 +113,4 @@ with gr.Blocks(title="Voxcribe - Speech to Text", theme=gr.themes.Soft()) as dem
     )
 
 if __name__ == "__main__":
-    demo.launch()
+    demo.launch(theme=gr.themes.Soft())
