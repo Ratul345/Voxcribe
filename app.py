@@ -59,7 +59,7 @@ def transcribe_audio(audio_path, model_size, language, task):
     return meta_info, transcription, srt_content
 
 # Custom UI
-with gr.Blocks(title="Voxcribe - Speech to Text") as demo:
+with gr.Blocks(title="Voxcribe - Speech to Text", theme=gr.themes.Soft()) as demo:
     gr.Markdown(
         """
         # 🎙️ Voxcribe — Bangla & Multilingual Speech to Text
@@ -113,4 +113,4 @@ with gr.Blocks(title="Voxcribe - Speech to Text") as demo:
     )
 
 if __name__ == "__main__":
-    demo.launch(theme=gr.themes.Soft())
+    demo.launch()
