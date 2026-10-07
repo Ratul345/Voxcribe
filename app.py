@@ -1,7 +1,6 @@
-import os
-import spaces
 import gradio as gr
 from faster_whisper import WhisperModel
+import spaces
 
 # ---------------------------------------------------------------------------
 # Model cache
@@ -60,31 +59,30 @@ def transcribe_audio(audio_path, model_size, language, task):
     return meta, transcription, srt_content
 
 # ---------------------------------------------------------------------------
-# Clean, modern UI
+# Clean, modern UI (compatible with Gradio 5)
 # ---------------------------------------------------------------------------
 custom_css = """
-.container {
-    max-width: 1000px !important;
-    margin: 0 auto !important;
+/* Constrain SVG icons to normal sizes */
+svg {
+    max-width: 24px !important;
+    max-height: 24px !important;
 }
-.header-card {
+.header-box {
     text-align: center;
-    padding: 24px 20px;
+    padding: 24px;
     background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-    border-radius: 14px;
+    border-radius: 12px;
     color: white;
     margin-bottom: 20px;
-    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.2);
 }
-.header-card h1 {
+.header-box h1 {
     font-size: 28px;
-    font-weight: 700;
+    font-weight: bold;
     margin: 0 0 6px 0;
     color: white !important;
 }
-.header-card p {
+.header-box p {
     font-size: 15px;
-    opacity: 0.9;
     margin: 0;
     color: #ede9fe !important;
 }
@@ -93,88 +91,80 @@ custom_css = """
     color: white !important;
     font-size: 16px !important;
     font-weight: 600 !important;
-    border: none !important;
     border-radius: 8px !important;
-    padding: 12px 20px !important;
-    margin-top: 10px !important;
+    padding: 12px !important;
+    border: none !important;
 }
 """
 
 with gr.Blocks(title="Voxcribe - Speech to Text", css=custom_css, theme=gr.themes.Soft()) as demo:
-    with gr.Column(elem_classes="container"):
-        gr.HTML(
-            """
-            <div class="header-card">
-                <h1>🎙️ Voxcribe</h1>
-                <p>Bangla & Multilingual AI Speech-to-Text • Powered by ZeroGPU</p>
-            </div>
-            """
-        )
+    gr.HTML(
+        """
+        <div class="header-box">
+            <h1>🎙️ Voxcribe</h1>
+            <p>Bangla & Multilingual AI Speech-to-Text • Powered by ZeroGPU</p>
+        </div>
+        """
+    )
 
-        with gr.Row():
-            with gr.Column(scale=1):
-                audio_input = gr.Audio(
-                    sources=["upload", "microphone"],
-                    type="filepath",
-                    label="Audio Input (Upload file or record)"
+    with gr.Row():
+        with gr.Column(scale=1):
+            audio_input = gr.Audio(
+                sources=["upload", "microphone"],
+                type="filepath",
+                label="Audio Input"
+            )
+
+            with gr.Row():
+                model_dd = gr.Dropdown(
+                    choices=["large-v3", "turbo", "medium", "small", "base"],
+                    value="large-v3",
+                    label="Model Size"
+                )
+                lang_dd = gr.Dropdown(
+                    choices=[
+                        ("Auto Detect", "auto"),
+                        ("Bangla (বাংলা)", "bn"),
+                        ("English", "en"),
+                        ("Hindi (हिन्दी)", "hi"),
+                        ("Arabic (العربية)", "ar"),
+                        ("Spanish", "es")
+                    ],
+                    value="bn",
+                    label="Language"
                 )
 
-                with gr.Row():
-                    model_dd = gr.Dropdown(
-                        choices=["large-v3", "turbo", "medium", "small", "base"],
-                        value="large-v3",
-                        label="Model Size"
+            task_radio = gr.Radio(
+                choices=[("Transcribe", "transcribe"), ("Translate to English", "translate")],
+                value="transcribe",
+                label="Task"
+            )
+
+            transcribe_btn = gr.Button("🚀 Start Transcription", elem_id="start-btn")
+
+        with gr.Column(scale=1):
+            meta_display = gr.Markdown()
+            with gr.Tabs():
+                with gr.Tab("Transcript"):
+                    text_output = gr.Textbox(
+                        label="Full Text",
+                        lines=10,
+                        placeholder="Transcribed text will appear here...",
+                        show_copy_button=True
                     )
-                    lang_dd = gr.Dropdown(
-                        choices=[
-                            ("Auto Detect", "auto"),
-                            ("Bangla (বাংলা)", "bn"),
-                            ("English", "en"),
-                            ("Hindi (हिन्दी)", "hi"),
-                            ("Arabic (العربية)", "ar"),
-                            ("Spanish", "es")
-                        ],
-                        value="bn",
-                        label="Language"
+                with gr.Tab("Subtitles (SRT)"):
+                    srt_output = gr.Textbox(
+                        label="Subtitles (SRT)",
+                        lines=10,
+                        placeholder="Subtitles will appear here...",
+                        show_copy_button=True
                     )
 
-                task_radio = gr.Radio(
-                    choices=[("Transcribe", "transcribe"), ("Translate to English", "translate")],
-                    value="transcribe",
-                    label="Task"
-                )
-
-                transcribe_btn = gr.Button("🚀 Start Transcription", elem_id="start-btn")
-
-            with gr.Column(scale=1):
-                meta_display = gr.Markdown()
-                with gr.Tabs():
-                    with gr.Tab("Transcript"):
-                        text_output = gr.Textbox(
-                            label="Transcribed Text",
-                            lines=10,
-                            placeholder="Transcription will appear here...",
-                            show_copy_button=True
-                        )
-                    with gr.Tab("Subtitles (SRT)"):
-                        srt_output = gr.Textbox(
-                            label="SRT Format",
-                            lines=10,
-                            placeholder="Subtitles will appear here...",
-                            show_copy_button=True
-                        )
-
-        transcribe_btn.click(
-            fn=transcribe_audio,
-            inputs=[audio_input, model_dd, lang_dd, task_radio],
-            outputs=[meta_display, text_output, srt_output]
-        )
-
-        gr.Markdown(
-            "<center style='color: #888; font-size: 13px; margin-top: 24px;'>"
-            "Powered by <b>faster-whisper</b> on Hugging Face <b>ZeroGPU</b>"
-            "</center>"
-        )
+    transcribe_btn.click(
+        fn=transcribe_audio,
+        inputs=[audio_input, model_dd, lang_dd, task_radio],
+        outputs=[meta_display, text_output, srt_output]
+    )
 
 if __name__ == "__main__":
-    demo.launch(show_api=False)
+    demo.launch()
