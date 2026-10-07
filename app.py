@@ -14,14 +14,12 @@ def get_model(model_size: str = "large-v3"):
         )
     return _MODEL_CACHE[model_size]
 
-
 def format_timestamp(seconds: float) -> str:
     h = int(seconds // 3600)
     m = int((seconds % 3600) // 60)
     s = int(seconds % 60)
     ms = int((seconds - int(seconds)) * 1000)
     return f"{h:02d}:{m:02d}:{s:02d},{ms:03d}"
-
 
 # ---------------------------------------------------------------------------
 # Transcription logic
@@ -54,177 +52,135 @@ def transcribe_audio(audio_path, model_size, language, task):
     transcription = " ".join(full_text)
     srt_content = "\n".join(srt_lines)
     meta = (
-        f"🌐 **Language:** {info.language}  •  "
-        f"📊 **Confidence:** {info.language_probability:.1%}  •  "
-        f"⏱️ **Duration:** {info.duration:.1f}s"
+        f"🌐 **Language:** `{info.language}` | "
+        f"📊 **Confidence:** `{info.language_probability:.1%}` | "
+        f"⏱️ **Duration:** `{info.duration:.1f}s`"
     )
     return meta, transcription, srt_content
 
-
 # ---------------------------------------------------------------------------
-# Custom CSS
+# Clean, modern CSS with strict icon size control
 # ---------------------------------------------------------------------------
 custom_css = """
-/* ── Global ──────────────────────────────────────────────── */
+/* Fix huge SVG icons on Hugging Face Spaces */
+svg, .upload-container svg, button svg, .icon svg {
+    max-width: 28px !important;
+    max-height: 28px !important;
+    width: auto !important;
+    height: auto !important;
+    display: inline-block !important;
+}
+
+/* Audio input box styling */
 .gradio-container {
-    max-width: 960px !important;
-    margin: 0 auto !important;
-    font-family: 'Inter', 'Segoe UI', sans-serif !important;
+    max-width: 900px !important;
+    margin: 20px auto !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
 }
 
-/* ── Header banner ───────────────────────────────────────── */
-#header-banner {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 16px;
-    padding: 28px 32px;
-    margin-bottom: 20px;
+.header-box {
     text-align: center;
-    color: #fff;
-}
-#header-banner h1 {
-    font-size: 2rem;
-    margin: 0 0 4px 0;
-    color: #fff !important;
-}
-#header-banner p {
-    margin: 0;
-    opacity: 0.9;
-    font-size: 0.95rem;
-    color: #e8e8ff !important;
-}
-
-/* ── Cards ───────────────────────────────────────────────── */
-.card-section {
-    border: 1px solid #e2e8f0;
+    padding: 24px 16px;
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
     border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 16px;
-    background: #fafbfc;
+    color: white;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
 }
 
-/* ── Primary button ──────────────────────────────────────── */
-#run-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-    border: none !important;
-    color: #fff !important;
-    font-size: 1.05rem !important;
+.header-box h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 6px 0;
+    color: white !important;
+}
+
+.header-box p {
+    font-size: 14px;
+    opacity: 0.85;
+    margin: 0;
+    color: #e0e7ff !important;
+}
+
+#transcribe-btn {
+    background: #4f46e5 !important;
+    color: white !important;
+    font-size: 16px !important;
     font-weight: 600 !important;
-    border-radius: 10px !important;
-    padding: 12px 0 !important;
-    transition: transform 0.15s ease, box-shadow 0.15s ease !important;
-}
-#run-btn:hover {
-    transform: translateY(-1px) !important;
-    box-shadow: 0 6px 20px rgba(102,126,234,0.45) !important;
+    padding: 12px !important;
+    border-radius: 8px !important;
+    border: none !important;
+    margin: 12px 0 !important;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3) !important;
 }
 
-/* ── Meta info strip ─────────────────────────────────────── */
-#meta-strip {
-    background: linear-gradient(90deg, #eef2ff 0%, #faf5ff 100%);
-    border-radius: 10px;
-    padding: 12px 18px;
-    border-left: 4px solid #764ba2;
-}
-
-/* ── Outputs ─────────────────────────────────────────────── */
-#transcript-box textarea, #srt-box textarea {
-    font-size: 0.92rem !important;
-    line-height: 1.6 !important;
+#transcribe-btn:hover {
+    background: #4338ca !important;
 }
 """
 
-# ---------------------------------------------------------------------------
-# UI
-# ---------------------------------------------------------------------------
-with gr.Blocks(css=custom_css, title="Voxcribe – Speech to Text") as demo:
-
-    # Header
+with gr.Blocks(title="Voxcribe - Speech to Text", css=custom_css, theme=gr.themes.Default()) as demo:
     gr.HTML(
         """
-        <div id="header-banner">
+        <div class="header-box">
             <h1>🎙️ Voxcribe</h1>
-            <p>Bangla &amp; Multilingual Speech-to-Text · powered by faster-whisper &amp; ZeroGPU</p>
+            <p>Bangla & Multilingual AI Speech-to-Text • Powered by ZeroGPU</p>
         </div>
         """
     )
 
-    # ── Input section ────────────────────────────────────────
-    with gr.Group(elem_classes="card-section"):
-        gr.Markdown("### 🎧 Audio Input")
-        audio_input = gr.Audio(
-            sources=["upload", "microphone"],
-            type="filepath",
-            label="Upload a file or record from your microphone",
-        )
+    with gr.Row():
+        with gr.Column(scale=1):
+            audio_input = gr.Audio(
+                sources=["upload", "microphone"],
+                type="filepath",
+                label="Audio / Voice Input"
+            )
 
-        with gr.Row():
-            model_dd = gr.Dropdown(
-                choices=["large-v3", "turbo", "medium", "small", "base"],
-                value="large-v3",
-                label="🧠 Model",
-                info="Larger models are more accurate but slower.",
-            )
-            lang_dd = gr.Dropdown(
-                choices=[
-                    ("Auto Detect", "auto"),
-                    ("Bangla  বাংলা", "bn"),
-                    ("English", "en"),
-                    ("Hindi  हिन्दी", "hi"),
-                    ("Arabic  العربية", "ar"),
-                    ("Spanish", "es"),
-                ],
-                value="bn",
-                label="🌍 Language",
-            )
+            with gr.Row():
+                model_dd = gr.Dropdown(
+                    choices=["large-v3", "turbo", "medium", "small", "base"],
+                    value="large-v3",
+                    label="Model Size"
+                )
+                lang_dd = gr.Dropdown(
+                    choices=[
+                        ("Auto Detect", "auto"),
+                        ("Bangla (বাংলা)", "bn"),
+                        ("English", "en"),
+                        ("Hindi (हिन्दी)", "hi"),
+                        ("Arabic (العربية)", "ar"),
+                        ("Spanish", "es")
+                    ],
+                    value="bn",
+                    label="Language"
+                )
+
             task_radio = gr.Radio(
-                choices=[
-                    ("Transcribe", "transcribe"),
-                    ("Translate → English", "translate"),
-                ],
+                choices=[("Transcribe", "transcribe"), ("Translate to English", "translate")],
                 value="transcribe",
-                label="📝 Task",
+                label="Task"
             )
 
-    transcribe_btn = gr.Button(
-        "🚀  Start Transcription",
-        variant="primary",
-        elem_id="run-btn",
-    )
+            transcribe_btn = gr.Button("🚀 Start Transcription", elem_id="transcribe-btn")
 
-    # ── Output section ───────────────────────────────────────
-    with gr.Group(elem_classes="card-section"):
-        gr.Markdown("### 📄 Results")
-        meta_display = gr.Markdown(elem_id="meta-strip")
+        with gr.Column(scale=1):
+            meta_display = gr.Markdown()
+            text_output = gr.Textbox(
+                label="Transcription Text",
+                lines=9,
+                placeholder="Transcribed text will appear here..."
+            )
+            srt_output = gr.Textbox(
+                label="Subtitles (SRT)",
+                lines=9,
+                placeholder="SRT timestamps will appear here..."
+            )
 
-        with gr.Tabs():
-            with gr.Tab("Transcript"):
-                text_output = gr.Textbox(
-                    label="Full Text",
-                    lines=10,
-                    show_copy_button=True,
-                    elem_id="transcript-box",
-                )
-            with gr.Tab("Subtitles (SRT)"):
-                srt_output = gr.Textbox(
-                    label="SRT Format",
-                    lines=10,
-                    show_copy_button=True,
-                    elem_id="srt-box",
-                )
-
-    # ── Wiring ───────────────────────────────────────────────
     transcribe_btn.click(
         fn=transcribe_audio,
         inputs=[audio_input, model_dd, lang_dd, task_radio],
-        outputs=[meta_display, text_output, srt_output],
-    )
-
-    # Footer
-    gr.Markdown(
-        "<center style='color:#888;font-size:0.82rem;margin-top:12px'>"
-        "Built with ❤️ by <b>Ratul</b> · MIT License · "
-        "<a href='https://github.com/Ratul345/BanglaSTT' target='_blank'>GitHub</a>"
-        "</center>"
+        outputs=[meta_display, text_output, srt_output]
     )
 
 if __name__ == "__main__":
