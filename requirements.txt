@@ -1,4 +1,4 @@
 # Voxcribe — Dependencies for Hugging Face Spaces & Local
 faster-whisper>=1.0.0
 spaces
-gradio
+gradio==5.20.0

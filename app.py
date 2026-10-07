@@ -103,8 +103,8 @@ with gr.Blocks(title="Voxcribe - Speech to Text", theme=gr.themes.Soft()) as dem
 
         with gr.Column(scale=1):
             meta_display = gr.Markdown(label="Info")
-            text_output = gr.Textbox(label="Transcription Text", lines=8)
-            srt_output = gr.Textbox(label="Subtitles (SRT format)", lines=8)
+            text_output = gr.Textbox(label="Transcription Text", lines=8, show_copy_button=True)
+            srt_output = gr.Textbox(label="Subtitles (SRT format)", lines=8, show_copy_button=True)
 
     transcribe_btn.click(
         fn=transcribe_audio,
