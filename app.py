@@ -177,4 +177,4 @@ with gr.Blocks(title="Voxcribe - Speech to Text", css=custom_css, theme=gr.theme
         )
 
 if __name__ == "__main__":
-    demo.launch(ssr_mode=False)
+    demo.launch()
