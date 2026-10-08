@@ -132,7 +132,6 @@ output/
 # Temporary media files
 *.tmp
 
-# media files
-*.mp4
-*.mp3
-*.wav
+#audios
+bangla.mp4
+hindi.mp4

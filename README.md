@@ -1,14 +1,14 @@
 ---
 title: Voxcribe
-emoji: 🎙️
-colorFrom: blue
-colorTo: purple
+emoji: 🏢
+colorFrom: pink
+colorTo: red
 sdk: gradio
-sdk_version: 5.20.0
+sdk_version: 6.29.1
+python_version: '3.12'
 app_file: app.py
 pinned: false
 license: mit
 ---
 
-# 🎙️ Voxcribe — Bangla & Multilingual Speech to Text
-Fast, accurate AI transcription powered by **faster-whisper** on **Hugging Face ZeroGPU**.
+Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference

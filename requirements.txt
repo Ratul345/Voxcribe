@@ -1,3 +1,9 @@
-# Voxcribe — Dependencies for Hugging Face Spaces & Local
+# Voxcribe — Local Video/Audio Transcription Tool
+# ===================================================
+
+# Core dependency — faster-whisper (CTranslate2-based Whisper reimplementation)
 faster-whisper>=1.0.0
-spaces
+
+# Windows FFmpeg fallback (bundles FFmpeg binary)
+# Not needed if FFmpeg is already installed on your system
+imageio-ffmpeg>=0.6.0; sys_platform == "win32"
