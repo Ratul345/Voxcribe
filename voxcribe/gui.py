@@ -50,7 +50,7 @@ class BanglaSTTApp(ctk.CTk):
         super().__init__()
 
         # Window configuration
-        self.title("BanglaSTT & Voxcribe — AI Audio/Video Transcriber")
+        self.title("Voxcribe")
         self.geometry("1100x780")
         self.minsize(960, 680)
 

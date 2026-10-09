@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-BanglaSTT & Voxcribe — Desktop GUI Application Launcher
+Voxcribe — Desktop GUI Application Launcher
 """
 
 from voxcribe.gui import launch_gui

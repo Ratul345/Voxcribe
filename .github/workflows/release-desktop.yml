@@ -75,7 +75,7 @@ jobs:
           prerelease: false
           generate_release_notes: true
           body: |
-            ### 🎙️ BanglaSTT & Voxcribe — Windows Desktop Release
+            ### 🎙️ Voxcribe — Windows Desktop Release
             
             **What's Included:**
             - Modern Desktop GUI with Dark / Light Theme

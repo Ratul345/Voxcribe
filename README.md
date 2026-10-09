@@ -1,4 +1,4 @@
-# 🎙️ BanglaSTT & Voxcribe — AI Desktop Transcriber
+# 🎙️ Voxcribe — AI Desktop Transcriber
 
 A modern, high-performance local AI desktop speech-to-text application and CLI powered by `faster-whisper` (CTranslate2). Specially tailored for Bengali (বাংলা) transcription while offering complete multilingual speech recognition, automatic language detection, real-time streaming, and translation.
 
