@@ -1,0 +1,89 @@
+name: Build and Release Windows Desktop App
+
+on:
+  push:
+    tags:
+      - 'v*'
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    name: Build Windows .exe
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller pyinstaller-hooks-contrib
+
+      - name: Build Standalone Executable with PyInstaller
+        shell: pwsh
+        run: |
+          $ctkPath = python -c "import customtkinter, os; print(os.path.dirname(customtkinter.__file__))"
+          echo "CustomTkinter path: $ctkPath"
+
+          pyinstaller --noconfirm --onedir --windowed `
+            --name "BanglaSTT" `
+            --add-data "${ctkPath};customtkinter" `
+            --collect-all "faster_whisper" `
+            --collect-all "ctranslate2" `
+            --collect-all "customtkinter" `
+            --collect-all "imageio_ffmpeg" `
+            --hidden-import "voxcribe" `
+            --hidden-import "voxcribe.gui" `
+            --hidden-import "voxcribe.transcriber" `
+            --hidden-import "voxcribe.exporters" `
+            --hidden-import "voxcribe.utils" `
+            --hidden-import "customtkinter" `
+            --hidden-import "faster_whisper" `
+            gui_app.py
+
+      - name: Compress Executable Package
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "dist\BanglaSTT\*" -DestinationPath "BanglaSTT-Windows-x64.zip"
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BanglaSTT-Windows-x64
+          path: BanglaSTT-Windows-x64.zip
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+        uses: softprops/action-gh-release@v2
+        with:
+          name: BanglaSTT Desktop ${{ github.ref_name }}
+          files: BanglaSTT-Windows-x64.zip
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          body: |
+            ### 🎙️ BanglaSTT & Voxcribe — Windows Desktop Release
+            
+            **What's Included:**
+            - Modern Desktop GUI with Dark / Light Theme
+            - Offline faster-whisper (CTranslate2) speech recognition
+            - Real-time timestamped Bengali (বাংলা) & Multilingual transcription
+            - Exports to TXT, SRT subtitles, and JSON
+            
+            **How to run:**
+            1. Download `BanglaSTT-Windows-x64.zip`
+            2. Extract all files to a folder
+            3. Double click `BanglaSTT.exe`
