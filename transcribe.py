@@ -9,7 +9,12 @@ Author: Ratul
 License: MIT
 """
 
+import sys
 from voxcribe.cli import main
+from voxcribe.gui import launch_gui
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) == 1 or "--gui" in sys.argv:
+        launch_gui()
+    else:
+        main()

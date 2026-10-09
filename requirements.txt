@@ -7,3 +7,6 @@ faster-whisper>=1.0.0
 # Windows FFmpeg fallback (bundles FFmpeg binary)
 # Not needed if FFmpeg is already installed on your system
 imageio-ffmpeg>=0.6.0; sys_platform == "win32"
+
+# Modern Desktop GUI
+customtkinter>=5.2.0
