@@ -74,8 +74,8 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.0.0' }}
-          name: Voxcribe Desktop ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.0.0' }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.0.0' }}
+          name: Voxcribe Desktop ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.0.0' }}
           files: Voxcribe-Windows-x64.zip
           draft: false
           prerelease: false

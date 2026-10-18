@@ -8,5 +8,5 @@ for personal learning.
 License: MIT
 """
 
-__version__ = "2.0.0"
+__version__ = "1.0.0"
 __description__ = "Local AI video/audio transcription tool powered by faster-whisper"

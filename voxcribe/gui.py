@@ -21,7 +21,7 @@ from typing import Optional, List
 if sys.platform == "win32":
     try:
         import ctypes
-        app_user_model_id = "Voxcribe.voxcribe.studio.v2"
+        app_user_model_id = "voxcribe.studio.v1"
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(app_user_model_id)
     except Exception:
         pass
