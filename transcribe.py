@@ -5,7 +5,6 @@ Voxcribe - Local Video/Audio Transcription Tool
 Thin entry point:
     python transcribe.py audio_file.mp3
 
-Author: Ratul
 License: MIT
 """
 

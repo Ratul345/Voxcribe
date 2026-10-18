@@ -10,3 +10,4 @@ imageio-ffmpeg>=0.6.0; sys_platform == "win32"
 
 # Modern Desktop GUI
 customtkinter>=5.2.0
+Pillow>=10.0.0

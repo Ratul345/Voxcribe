@@ -67,7 +67,7 @@ python transcribe.py bangla.mp4 --device cuda --compute-type float16
 ## 🛠️ Project Structure
 
 ```text
-BanglaSTT/
+Voxcribe/
 ├── gui_app.py           # Desktop Application launcher
 ├── transcribe.py        # Dual launcher (launches GUI or CLI depending on arguments)
 ├── requirements.txt     # Python dependencies

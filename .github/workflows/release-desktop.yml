@@ -3,7 +3,7 @@ name: Build and Release Windows Desktop App
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
     branches:
       - main
   workflow_dispatch:
@@ -23,8 +23,8 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-          cache: 'pip'
+          python-version: "3.11"
+          cache: "pip"
 
       - name: Install Dependencies
         run: |
@@ -39,12 +39,18 @@ jobs:
           echo "CustomTkinter path: $ctkPath"
 
           pyinstaller --noconfirm --onedir --windowed `
-            --name "BanglaSTT" `
+            --name "Voxcribe" `
+            --icon "voxcribe/assets/logo.ico" `
             --add-data "${ctkPath};customtkinter" `
+            --add-data "voxcribe/assets;voxcribe/assets" `
             --collect-all "faster_whisper" `
             --collect-all "ctranslate2" `
             --collect-all "customtkinter" `
             --collect-all "imageio_ffmpeg" `
+            --collect-all "PIL" `
+            --hidden-import "PIL" `
+            --hidden-import "PIL.Image" `
+            --hidden-import "PIL.ImageTk" `
             --hidden-import "voxcribe" `
             --hidden-import "voxcribe.gui" `
             --hidden-import "voxcribe.transcriber" `
@@ -57,33 +63,33 @@ jobs:
       - name: Compress Executable Package
         shell: pwsh
         run: |
-          Compress-Archive -Path "dist\BanglaSTT\*" -DestinationPath "BanglaSTT-Windows-x64.zip"
+          Compress-Archive -Path "dist\Voxcribe\*" -DestinationPath "Voxcribe-Windows-x64.zip"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: BanglaSTT-Windows-x64
-          path: BanglaSTT-Windows-x64.zip
+          name: Voxcribe-Windows-x64
+          path: Voxcribe-Windows-x64.zip
 
       - name: Create GitHub Release
-        if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
         uses: softprops/action-gh-release@v2
         with:
-          name: BanglaSTT Desktop ${{ github.ref_name }}
-          files: BanglaSTT-Windows-x64.zip
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.0.0' }}
+          name: Voxcribe Desktop ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v2.0.0' }}
+          files: Voxcribe-Windows-x64.zip
           draft: false
           prerelease: false
           generate_release_notes: true
           body: |
             ### 🎙️ Voxcribe — Windows Desktop Release
-            
+
             **What's Included:**
             - Modern Desktop GUI with Dark / Light Theme
             - Offline faster-whisper (CTranslate2) speech recognition
             - Real-time timestamped Bengali (বাংলা) & Multilingual transcription
             - Exports to TXT, SRT subtitles, and JSON
-            
+
             **How to run:**
-            1. Download `BanglaSTT-Windows-x64.zip`
+            1. Download `Voxcribe-Windows-x64.zip`
             2. Extract all files to a folder
-            3. Double click `BanglaSTT.exe`
+            3. Double click `Voxcribe.exe`
